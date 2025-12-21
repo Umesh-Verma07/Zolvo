@@ -4,7 +4,7 @@
 
 Zolvo is a location-based service booking platform that connects users with nearby workers (Plumbers, Electricians, etc.) in real-time. Built with a "Mobile-First" approach and Scalable Architecture.
 
-![Zolvo App](https://via.placeholder.com/800x400?text=Zolvo+App+Preview)
+<!-- ![Zolvo App](https://via.placeholder.com/800x400?text=Zolvo+App+Preview) -->
 
 ## 🚀 Features (Implemented)
 - **📍 Live Geo-Tracking:** Find providers within a 5km radius using MongoDB Geospatial queries.
