@@ -2,19 +2,26 @@ import { Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Search from './pages/Search';
+import BookingPage from './pages/BookingPage';
+import Bookings from './pages/Bookings';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
-        {/* Jab user '/' par aayega, Home dikhega */}
+        {/* Home Route */}
         <Route index element={<Home />} />
-        
-        {/* Naya Search Route */}
+
+        {/* Search Route */}
         <Route path="search" element={<Search />} />
 
+        {/* Route for Booking */}
+        <Route path="book/:providerId" element={<BookingPage />} />
+
+        {/* Booking History Route */}
+        <Route path="bookings" element={<Bookings />} />
+
         {/* Future routes yahan aayenge */}
-        <Route path="bookings" element={<div className="p-4">📅 Bookings Page Coming Soon...</div>} />
         <Route path="profile" element={<div className="p-4">👤 Profile Page Coming Soon...</div>} />
       </Route>
     </Routes>

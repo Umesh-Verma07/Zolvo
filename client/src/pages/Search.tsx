@@ -99,8 +99,14 @@ const Search = () => {
                                     <Star size={14} className="fill-current mr-1" />
                                     4.8
                                 </div>
-                                <button className="flex-1 bg-slate-900 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                                {/* <button className="flex-1 bg-slate-900 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
                                     <Phone size={14} /> Call Now
+                                </button> */}
+                                <button
+                                    onClick={() => navigate(`/book/${worker._id}`)}
+                                    className="flex-1 bg-slate-900 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+                                >
+                                    Book Now
                                 </button>
                             </div>
                         </div>
