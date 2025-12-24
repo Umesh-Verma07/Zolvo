@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../lib/axios';
-import { Calendar, Clock, MapPin, User } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface Booking {
   _id: string;
@@ -16,14 +17,19 @@ interface Booking {
 }
 
 const Bookings = () => {
+  const { user } = useAuth(); // <--- Get User
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     const fetchBookings = async () => {
       try {
-        // TODO: Replace 'user_guest_123' with actual User ID later
-        const res = await api.get('/bookings/user/user_guest_123');
+        const res = await api.get(`/bookings/user/${user.id}`);
         if (res.data.success) {
           setBookings(res.data.data);
         }
@@ -35,7 +41,17 @@ const Bookings = () => {
     };
 
     fetchBookings();
-  }, []);
+  }, [user]);
+
+  // Show login message if not logged in
+  if (!user) {
+    return (
+      <div className="p-8 text-center flex flex-col items-center">
+        <AlertCircle size={48} className="text-gray-300 mb-4" />
+        <p className="text-gray-500 mb-4">Please login to view your bookings.</p>
+      </div>
+    );
+  }
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading your bookings...</div>;
 

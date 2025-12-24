@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle } from 'lucide-react';
 import api from '../lib/axios';
+import { useAuth } from '../context/AuthContext'; // <--- Import Auth
 
 interface Provider {
   _id: string;
@@ -13,28 +14,29 @@ interface Provider {
 const BookingPage = () => {
   const { providerId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth(); // <--- Get current user
   
   const [provider, setProvider] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
-  // Form State
   const [formData, setFormData] = useState({
     date: '',
     time: '',
     address: ''
   });
 
-  // Fetch provider details when component mounts
+  // Check if user is logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/login'); // Redirect to login if not authenticated
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     const fetchProvider = async () => {
       try {
-        // We reuse the nearby endpoint or create a specific one. 
-        // For now, we will filter from the nearby list or add a get-by-id endpoint later.
-        // To keep it simple, we assume the data is passed or we fetch it.
-        // NOTE: Ideally, create a specific GET /api/users/:id endpoint.
-        // For this prototype, we'll fetch nearby and find the specific one locally 
-        // (Not efficient for production but works for now).
+        // Fetching nearby providers to find the specific one
         const res = await api.get(`/providers/nearby?lat=28.6139&long=77.2090&radius=5000`);
         const found = res.data.data.find((p: Provider) => p._id === providerId);
         setProvider(found);
@@ -49,18 +51,17 @@ const BookingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return; // Double check
+
     try {
-      // TODO: Replace 'user_guest_123' with actual logged-in user ID after Auth implementation
       await api.post('/bookings', {
-        userId: 'user_guest_123', 
+        userId: user.id, // <--- 🔥 REAL USER ID
         providerId,
         serviceType: provider?.category || 'General',
         ...formData
       });
       setSuccess(true);
-      
-      // Redirect to home after 2 seconds
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/bookings'), 2000); // Redirect to My Bookings page
     } catch (error) {
       alert("Booking Failed. Please try again.");
     }
@@ -73,7 +74,7 @@ const BookingPage = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-4">
         <CheckCircle className="text-green-600 w-20 h-20 mb-4" />
         <h1 className="text-2xl font-bold text-green-800">Booking Confirmed!</h1>
-        <p className="text-green-600 mt-2">Redirecting to home...</p>
+        <p className="text-green-600 mt-2">Redirecting to your bookings...</p>
       </div>
     );
   }
@@ -89,7 +90,7 @@ const BookingPage = () => {
       </div>
 
       <main className="max-w-md mx-auto p-4 space-y-6">
-        {/* Provider Summary Card */}
+        {/* Provider Summary */}
         {provider && (
           <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
             <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-2xl">
@@ -105,15 +106,13 @@ const BookingPage = () => {
 
         {/* Booking Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
               <Calendar size={16} /> Select Date
             </label>
             <input 
-              type="date" 
-              required
-              className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              type="date" required
+              className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-primary"
               onChange={(e) => setFormData({...formData, date: e.target.value})}
             />
           </div>
@@ -123,9 +122,8 @@ const BookingPage = () => {
               <Clock size={16} /> Select Time
             </label>
             <input 
-              type="time" 
-              required
-              className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none"
+              type="time" required
+              className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-primary"
               onChange={(e) => setFormData({...formData, time: e.target.value})}
             />
           </div>
@@ -135,18 +133,13 @@ const BookingPage = () => {
               <MapPin size={16} /> Your Address
             </label>
             <textarea 
-              rows={3}
-              placeholder="House No, Street, Landmark..."
-              required
-              className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none resize-none"
+              rows={3} placeholder="House No, Street, Landmark..." required
+              className="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-primary resize-none"
               onChange={(e) => setFormData({...formData, address: e.target.value})}
             ></textarea>
           </div>
 
-          <button 
-            type="submit" 
-            className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-transform active:scale-95 shadow-lg mt-4"
-          >
+          <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-transform active:scale-95 shadow-lg mt-4">
             Confirm Booking
           </button>
         </form>
