@@ -1,47 +1,36 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose from "mongoose";
 
-// User ka structure define kar rahe hain
-export interface IUser extends Document {
-  name: string;
-  phone: string;
-  role: "customer" | "provider";
-  category?: string; // Sirf Providers ke liye (e.g., Plumber)
-  hourlyRate?: number; // Sirf Providers ke liye
-  isAvailable?: boolean;
-  location: {
-    type: "Point";
-    coordinates: number[]; // [Longitude, Latitude]
-  };
-}
-
-const UserSchema: Schema = new Schema(
-  {
-    name: { type: String, required: true },
-    phone: { type: String, required: true, unique: true },
-    role: { type: String, enum: ["customer", "provider"], default: "customer" },
-
-    // Provider specific fields
-    category: { type: String }, // e.g., 'Plumber', 'Electrician'
-    hourlyRate: { type: Number },
-    isAvailable: { type: Boolean, default: true },
-
-    // 🔥 JADU: GeoJSON Location (Isse hi nearby workers milenge)
-    location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
-      coordinates: {
-        type: [Number],
-        required: true, // [Longitude, Latitude]
-      },
-    },
+const userSchema = new mongoose.Schema({
+  name: { 
+    type: String, 
+    required: true 
   },
-  { timestamps: true }
-);
+  email: { 
+    type: String, 
+    unique: true, // Email duplicate nahi ho sakti
+    sparse: true  // Allows null/undefined for existing users without email
+  },
+  password: { 
+    type: String, 
+    select: false // Default query mein password kabhi return nahi hoga (Safety)
+  },
+  phone: { 
+    type: String, 
+    required: true 
+  },
+  role: { 
+    type: String, 
+    enum: ["user", "provider"], 
+    default: "user" 
+  },
+  
+  // Fields specifically for Service Providers
+  category: { type: String }, 
+  hourlyRate: { type: Number },
+  location: {
+    type: { type: String, enum: ["Point"] },
+    coordinates: { type: [Number], index: "2dsphere" }, // [Longitude, Latitude]
+  },
+}, { timestamps: true });
 
-// 🌍 Index banana zaroori hai location search ke liye
-UserSchema.index({ location: "2dsphere" });
-
-export default mongoose.model<IUser>("User", UserSchema);
+export default mongoose.model("User", userSchema);

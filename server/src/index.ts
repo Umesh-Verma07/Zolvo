@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db";
 import providerRoutes from "./routes/providerRoutes";
 import bookingRoutes from "./routes/booking";
+import authRoutes from "./routes/auth";
 
 // 1. Config Load karein
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.json()); // JSON data padhne ke liye
 // Jab bhi koi '/api/providers' par aayega, use providerRoutes sambhalega
 app.use("/api/providers", providerRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/auth", authRoutes);
 
 // Test Route (Check karne ke liye ki server zinda hai)
 app.get("/", (req: Request, res: Response) => {
