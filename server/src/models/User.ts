@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
   // Fields specifically for Service Providers
   category: { type: String }, 
   hourlyRate: { type: Number },
+  about: { type: String },
+  experience: { type: Number, default: 0 },
+  aadhaar: { type: String },
+  aadhaarImage: { type: String },
   location: {
     type: { type: String, enum: ["Point"] },
     coordinates: { type: [Number], index: "2dsphere" }, // [Longitude, Latitude]
