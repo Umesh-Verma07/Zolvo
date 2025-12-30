@@ -7,6 +7,7 @@ import Bookings from './pages/Bookings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -32,6 +33,9 @@ function App() {
 
         {/* Profile Route */}
         <Route path="profile" element={<Profile />} />
+
+        { /* Admin Dashboard Route */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );
