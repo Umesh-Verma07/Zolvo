@@ -1,13 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/db";
 import providerRoutes from "./routes/providerRoutes";
 import bookingRoutes from "./routes/booking";
 import authRoutes from "./routes/auth";
-
-// 1. Config Load karein
-dotenv.config();
+import adminRoutes from "./routes/admin";
 
 // 2. Database Connect karein
 connectDB();
@@ -16,13 +15,15 @@ const app: Application = express();
 
 // 3. Middlewares (Security & Parsing)
 app.use(cors()); // Doosre domains (Frontend) se request allow karne ke liye
-app.use(express.json()); // JSON data padhne ke liye
+app.use(express.json({ limit: '50mb' })); // JSON data padhne ke liye
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // 4. Routes Register karein
 // Jab bhi koi '/api/providers' par aayega, use providerRoutes sambhalega
 app.use("/api/providers", providerRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Test Route (Check karne ke liye ki server zinda hai)
 app.get("/", (req: Request, res: Response) => {
