@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mic, Search, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import MapWidget from '../components/ui/MapWidget';
 
 const categories = [
@@ -83,16 +83,19 @@ const Home = () => {
                 </div>
                 <MapWidget />
             </div>
-
-            {/* 4. Banner / Promo */}
-            <div className="bg-slate-900 rounded-2xl p-6 text-white flex justify-between items-center shadow-lg">
+            <div className="bg-slate-900 rounded-2xl p-6 text-white flex items-center justify-between">
                 <div>
-                    <h3 className="font-bold text-lg">Worker ho?</h3>
-                    <p className="text-slate-400 text-sm">Aaj hi join karein</p>
+                    <h2 className="text-xl font-bold">Worker ho?</h2>
+                    <p className="text-slate-400 text-sm">Join Zolvo and get more customers nearby.</p>
                 </div>
-                <button className="bg-white text-slate-900 px-4 py-2 rounded-lg font-bold text-sm hover:bg-gray-100">
+
+                {/* 🔥 Link update karein */}
+                <Link
+                    to="/register?role=provider"
+                    className="bg-white text-slate-900 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-100"
+                >
                     Register
-                </button>
+                </Link>
             </div>
         </div>
     );
